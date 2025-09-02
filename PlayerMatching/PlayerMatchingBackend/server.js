@@ -39,7 +39,7 @@ const getAllowedOrigins = () => {
   if (process.env.FRONTEND_URL) origins.push(process.env.FRONTEND_URL)
   if (process.env.RENDER_EXTERNAL_URL) origins.push(process.env.RENDER_EXTERNAL_URL)
   if (process.env.NETLIFY_URL) origins.push(process.env.NETLIFY_URL)
-  if (process.env.VERCEL_URL) origins.push(`https://${process.env.VERCEL_URL}`)
+  if (process.env.VERCEL_URL) origins.push(process.env.VERCEL_URL)
   return origins.filter(Boolean)
 }
 
