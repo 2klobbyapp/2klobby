@@ -1,0 +1,33 @@
+# Node modules
+node_modules/
+PlayerMatchingBackend/node_modules/
+
+# Build outputs
+dist/
+build/
+PlayerMatchingBackend/dist/
+PlayerMatchingBackend/build/
+
+# Environment files
+.env
+PlayerMatchingBackend/.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+PlayerMatchingBackend/*.log
+
+# Coverage
+coverage/
+PlayerMatchingBackend/coverage/
+
+# Dependency lock files
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+PlayerMatchingBackend/pnpm-lock.yaml
+PlayerMatchingBackend/package-lock.json
+PlayerMatchingBackend/yarn.lock
