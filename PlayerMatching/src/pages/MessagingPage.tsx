@@ -91,7 +91,7 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ conversation_id: propConv
   const [groupUsers, setGroupUsers] = useState<GroupUsers>({ chatUsers: [], allUsers: [] })
   const [loadingGroupUsers, setLoadingGroupUsers] = useState(false)
   const [creatingGroup, setCreatingGroup] = useState(false)
-
+  const [searchQuery, setSearchQuery] = useState("")
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const socketRef = useRef<Socket | null>(null)
@@ -286,11 +286,11 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ conversation_id: propConv
         const updatedMessages = prevMessages.map((msg) =>
           msg.isSending && msg.content === messageData.text && msg.sender._id === messageData.sender
             ? {
-                ...msg,
-                _id: messageData.messageId,
-                timestamp: messageData.timestamp,
-                isSending: false,
-              }
+              ...msg,
+              _id: messageData.messageId,
+              timestamp: messageData.timestamp,
+              isSending: false,
+            }
             : msg,
         )
 
@@ -320,20 +320,20 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ conversation_id: propConv
           .map((conv) =>
             conv._id === messageData.chatId
               ? {
-                  ...conv,
-                  lastMessage: {
-                    _id: messageData.messageId,
-                    conversation: messageData.chatId,
-                    sender: {
-                      _id: messageData.sender,
-                      username: messageData.senderName || "Unknown",
-                      avatar: messageData.pic,
-                    },
-                    content: messageData.text,
-                    timestamp: messageData.timestamp,
+                ...conv,
+                lastMessage: {
+                  _id: messageData.messageId,
+                  conversation: messageData.chatId,
+                  sender: {
+                    _id: messageData.sender,
+                    username: messageData.senderName || "Unknown",
+                    avatar: messageData.pic,
                   },
-                  updatedAt: messageData.timestamp,
-                }
+                  content: messageData.text,
+                  timestamp: messageData.timestamp,
+                },
+                updatedAt: messageData.timestamp,
+              }
               : conv,
           )
           .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
@@ -613,10 +613,11 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ conversation_id: propConv
                 <h2 className="text-lg sm:text-xl font-bold text-gray-900">Create Group</h2>
                 <button
                   onClick={() => {
-                    setShowGroupModal(false)
-                    setGroupName("")
-                    setGroupDescription("")
-                    setSelectedUsers([])
+                    setShowGroupModal(false);
+                    setGroupName("");
+                    setGroupDescription("");
+                    setSelectedUsers([]);
+                    setSearchQuery(""); // Reset search query
                   }}
                   className="p-2 hover:bg-gray-100 rounded-lg touch-manipulation"
                   aria-label="Close modal"
@@ -653,6 +654,14 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ conversation_id: propConv
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Add Members (Select at least 2)</label>
+                {/* Search Input */}
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search users..."
+                  className="w-full px-3 py-3 sm:py-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+                />
 
                 {loadingGroupUsers ? (
                   <div className="text-center py-6">
@@ -666,36 +675,40 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ conversation_id: propConv
                       <div>
                         <h4 className="text-sm font-medium text-gray-600 mb-2">Recent Chats</h4>
                         <div className="space-y-2 max-h-32 overflow-y-auto">
-                          {groupUsers.chatUsers.map((chatUser) => (
-                            <label
-                              key={chatUser._id}
-                              className="flex items-center space-x-3 p-3 sm:p-2 hover:bg-gray-50 rounded-lg cursor-pointer touch-manipulation"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={selectedUsers.includes(chatUser._id)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setSelectedUsers((prev) => [...prev, chatUser._id])
-                                  } else {
-                                    setSelectedUsers((prev) => prev.filter((id) => id !== chatUser._id))
-                                  }
-                                }}
-                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                              />
-                              <div className="flex items-center space-x-2 flex-1 min-w-0">
-                                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
-                                  <span className="text-sm font-medium text-gray-600">
-                                    {chatUser.username.charAt(0).toUpperCase()}
-                                  </span>
+                          {groupUsers.chatUsers
+                            .filter((chatUser) =>
+                              chatUser.username.toLowerCase().includes(searchQuery.toLowerCase())
+                            )
+                            .map((chatUser) => (
+                              <label
+                                key={chatUser._id}
+                                className="flex items-center space-x-3 p-3 sm:p-2 hover:bg-gray-50 rounded-lg cursor-pointer touch-manipulation"
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={selectedUsers.includes(chatUser._id)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setSelectedUsers((prev) => [...prev, chatUser._id]);
+                                    } else {
+                                      setSelectedUsers((prev) => prev.filter((id) => id !== chatUser._id));
+                                    }
+                                  }}
+                                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <span className="text-sm font-medium text-gray-600">
+                                      {chatUser.username.charAt(0).toUpperCase()}
+                                    </span>
+                                  </div>
+                                  <span className="text-sm sm:text-base text-gray-900 truncate">{chatUser.username}</span>
+                                  {chatUser.isOnline && (
+                                    <div className="w-2 h-2 bg-green-400 rounded-full flex-shrink-0"></div>
+                                  )}
                                 </div>
-                                <span className="text-sm sm:text-base text-gray-900 truncate">{chatUser.username}</span>
-                                {chatUser.isOnline && (
-                                  <div className="w-2 h-2 bg-green-400 rounded-full flex-shrink-0"></div>
-                                )}
-                              </div>
-                            </label>
-                          ))}
+                              </label>
+                            ))}
                         </div>
                       </div>
                     )}
@@ -705,7 +718,11 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ conversation_id: propConv
                       <h4 className="text-sm font-medium text-gray-600 mb-2">All Users</h4>
                       <div className="space-y-2 max-h-40 overflow-y-auto">
                         {groupUsers.allUsers
-                          .filter((allUser) => !groupUsers.chatUsers.some((chatUser) => chatUser._id === allUser._id))
+                          .filter(
+                            (allUser) =>
+                              !groupUsers.chatUsers.some((chatUser) => chatUser._id === allUser._id) &&
+                              allUser.username.toLowerCase().includes(searchQuery.toLowerCase())
+                          )
                           .map((allUser) => (
                             <label
                               key={allUser._id}
@@ -716,9 +733,9 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ conversation_id: propConv
                                 checked={selectedUsers.includes(allUser._id)}
                                 onChange={(e) => {
                                   if (e.target.checked) {
-                                    setSelectedUsers((prev) => [...prev, allUser._id])
+                                    setSelectedUsers((prev) => [...prev, allUser._id]);
                                   } else {
-                                    setSelectedUsers((prev) => prev.filter((id) => id !== allUser._id))
+                                    setSelectedUsers((prev) => prev.filter((id) => id !== allUser._id));
                                   }
                                 }}
                                 className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -754,10 +771,11 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ conversation_id: propConv
             <div className="p-4 sm:p-6 border-t border-gray-200 flex flex-col sm:flex-row justify-end gap-3 sm:gap-3 sm:space-x-0">
               <button
                 onClick={() => {
-                  setShowGroupModal(false)
-                  setGroupName("")
-                  setGroupDescription("")
-                  setSelectedUsers([])
+                  setShowGroupModal(false);
+                  setGroupName("");
+                  setGroupDescription("");
+                  setSelectedUsers([]);
+                  setSearchQuery(""); // Reset search query
                 }}
                 className="order-2 sm:order-1 px-4 py-3 sm:py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors touch-manipulation"
               >
@@ -816,9 +834,8 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ conversation_id: propConv
               return (
                 <div
                   key={conversation._id}
-                  className={`relative group p-4 border-b border-gray-100 cursor-pointer transition-colors hover:bg-gray-50 ${
-                    selectedConversationId === conversation._id ? "bg-blue-50 border-r-2 border-r-blue-600" : ""
-                  }`}
+                  className={`relative group p-4 border-b border-gray-100 cursor-pointer transition-colors hover:bg-gray-50 ${selectedConversationId === conversation._id ? "bg-blue-50 border-r-2 border-r-blue-600" : ""
+                    }`}
                 >
                   <div
                     onClick={() => {
@@ -1071,9 +1088,6 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ conversation_id: propConv
                     <Trash2 size={18} className="sm:w-5 sm:h-5" />
                   </button>
                 )}
-                <button className="p-2 hover:bg-gray-100 rounded-lg touch-manipulation" aria-label="More options">
-                  <MoreVertical size={18} className="sm:w-5 sm:h-5 text-gray-600" />
-                </button>
               </div>
             </div>
           </div>
@@ -1102,11 +1116,10 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ conversation_id: propConv
                   className={`flex ${message.isOwn ? "justify-end" : "justify-start"} animate-slideInMessage`}
                 >
                   <div
-                    className={`relative max-w-[85%] sm:max-w-xs lg:max-w-md px-3 sm:px-4 py-2 sm:py-3 rounded-2xl ${
-                      message.isOwn
+                    className={`relative max-w-[85%] sm:max-w-xs lg:max-w-md px-3 sm:px-4 py-2 sm:py-3 rounded-2xl ${message.isOwn
                         ? `bg-blue-600 text-white rounded-br-sm ${message.isSending ? "opacity-70" : ""}`
                         : "bg-gray-100 text-gray-900 rounded-bl-sm"
-                    }`}
+                      }`}
                   >
                     {currentConversation?.isGroup && !message.isOwn && (
                       <p className="text-xs font-medium mb-1 opacity-75">{message.sender.username}</p>
