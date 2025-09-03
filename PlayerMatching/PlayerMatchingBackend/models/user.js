@@ -59,6 +59,16 @@ const UserSchema = new mongoose.Schema({
     maxlength: 500,
     default: "",
   },
+  nba2kTitle: {
+    type: String,
+    enum: ["2K26", "2K25", "2K24", ""],
+    default: "",
+  },
+  gameModes: {
+    type: [String],
+    enum: ["REC", "Pro-Am", "Park", ""],
+    default: [],
+  },
   isOnline: {
     type: Boolean,
     default: false,
@@ -79,7 +89,6 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  // Added notification fields from settings page
   messageNotifications: {
     type: Boolean,
     default: true,
@@ -110,6 +119,15 @@ const UserSchema = new mongoose.Schema({
   },
   banDate: {
     type: Date
+  },
+  favoriteTeam: {
+    type: String,
+    default: "",
+  },
+  playStyle: {
+    type: String,
+    enum: ["Competitive", "Casual", "Both", ""],
+    default: "",
   }
 })
 

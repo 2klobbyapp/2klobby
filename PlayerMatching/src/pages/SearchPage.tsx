@@ -35,6 +35,7 @@ interface Filters {
   maxRating: number
   status: "all" | "online" | "available"
   search: string
+  nba2kTitle: string[]
 }
 
 // Skeleton component for PlayerCard
@@ -117,6 +118,7 @@ const SearchPage: React.FC = () => {
     maxRating: 99,
     status: "all",
     search: "",
+    nba2kTitle: [],
   })
   const [searchResults, setSearchResults] = useState<Player[]>([])
   const [loading, setLoading] = useState(true)
@@ -185,6 +187,7 @@ const SearchPage: React.FC = () => {
         status: filters.status === "all" ? undefined : filters.status,
         search: filters.search || undefined,
         sortBy,
+        nba2kTitle: filters.nba2kTitle.length > 0 ? filters.nba2kTitle : undefined,
       }
       const response = await API.get("/players", { params })
       const mappedPlayers = response.data
@@ -225,6 +228,11 @@ const SearchPage: React.FC = () => {
       const { name, value, type } = e.target
       if (name === "search") {
         debouncedHandleSearch(value)
+      } else if (name === "nba2kTitle") {
+        const updatedTitles = (e.target as HTMLInputElement).checked
+          ? [...filters.nba2kTitle, value]
+          : filters.nba2kTitle.filter((title) => title !== value)
+        setFilters((prev) => ({ ...prev, nba2kTitle: updatedTitles }))
       } else {
         setFilters((prev) => ({
           ...prev,
@@ -232,7 +240,7 @@ const SearchPage: React.FC = () => {
         }))
       }
     },
-    [debouncedHandleSearch],
+    [debouncedHandleSearch, filters.nba2kTitle],
   )
 
   const handleRatingChange = useCallback((type: "minRating" | "maxRating", value: string) => {
@@ -271,6 +279,7 @@ const SearchPage: React.FC = () => {
     return Object.entries(filters).filter(([key, value]) => {
       if (key === "minRating") return value !== 70
       if (key === "maxRating") return value !== 99
+      if (key === "nba2kTitle") return value.length > 0
       if (typeof value === "string") return value !== "" && value !== "all"
       return false
     }).length
@@ -309,6 +318,7 @@ const SearchPage: React.FC = () => {
                   maxRating: 99,
                   status: "all",
                   search: "",
+                  nba2kTitle: [],
                 })
               }
               className="text-sm text-gray-500 hover:text-gray-700"
@@ -395,12 +405,13 @@ const SearchPage: React.FC = () => {
           </FilterSection>
           <FilterSection title="NBA 2K Title">
             <div className="space-y-2">
-              {["2K26", "2K25"].map((title) => (
+              {["2K26", "2K25", "2K24"].map((title) => (
                 <label key={title} className="flex items-center space-x-3">
                   <input
                     type="checkbox"
                     name="nba2kTitle"
                     value={title}
+                    checked={filters.nba2kTitle.includes(title)}
                     onChange={handleFilterChange}
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
@@ -463,6 +474,7 @@ const SearchPage: React.FC = () => {
                         maxRating: 99,
                         status: "all",
                         search: "",
+                        nba2kTitle: [],
                       })
                     }
                     className="text-sm text-gray-500 hover:text-gray-700 touch-manipulation"
@@ -548,6 +560,27 @@ const SearchPage: React.FC = () => {
                         <div className="flex items-center space-x-2">
                           <Gamepad2 size={18} className="text-gray-400" />
                           <span className="text-base text-gray-700">{consoleOption}</span>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </FilterSection>
+
+                <FilterSection title="NBA 2K Title">
+                  <div className="space-y-3">
+                    {["2K26", "2K25", "2K24"].map((title) => (
+                      <label key={title} className="flex items-center space-x-3 touch-manipulation">
+                        <input
+                          type="checkbox"
+                          name="nba2kTitle"
+                          value={title}
+                          checked={filters.nba2kTitle.includes(title)}
+                          onChange={handleFilterChange}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-4 h-4"
+                        />
+                        <div className="flex items-center space-x-2">
+                          <Gamepad2 size={18} className="text-gray-400" />
+                          <span className="text-base text-gray-700">{title}</span>
                         </div>
                       </label>
                     ))}

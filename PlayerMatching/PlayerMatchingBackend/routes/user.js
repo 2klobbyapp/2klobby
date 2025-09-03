@@ -37,7 +37,11 @@ router.put("/me", auth, async (req, res) => {
     allowInvites,
     messageNotifications,
     inviteNotifications,
-    gameUpdateNotifications
+    gameUpdateNotifications,
+    nba2kTitle,
+    gameModes,
+    favoriteTeam,
+    playStyle
   } = req.body
 
   // Build user fields object
@@ -49,6 +53,10 @@ router.put("/me", auth, async (req, res) => {
   if (preferredConsole !== undefined) userFields.preferredConsole = preferredConsole
   if (timezone !== undefined) userFields.timezone = timezone
   if (bio !== undefined) userFields.bio = bio
+  if (nba2kTitle !== undefined) userFields.nba2kTitle = nba2kTitle
+  if (gameModes !== undefined) userFields.gameModes = gameModes
+  if (favoriteTeam !== undefined) userFields.favoriteTeam = favoriteTeam
+  if (playStyle !== undefined) userFields.playStyle = playStyle
   
   // Online status
   if (typeof isOnline === "boolean") {
@@ -113,7 +121,7 @@ router.get("/:id", async (req, res) => {
     }
 
     const user = await User.findById(req.params.id).select(
-      "username joinDate totalPlayers isOnline lastSeen avatar profileVisibility showOnlineStatus allowInvites preferredConsole timezone bio"
+      "username joinDate totalPlayers isOnline lastSeen avatar profileVisibility showOnlineStatus allowInvites preferredConsole timezone bio nba2kTitle gameModes favoriteTeam playStyle"
     )
     
     if (!user) {

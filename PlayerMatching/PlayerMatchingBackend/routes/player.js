@@ -83,9 +83,10 @@ router.post("/", auth, async (req, res) => {
 // @access  Public
 router.get("/", auth, async (req, res) => {
   try {
-    const { position, console, timezone, minRating, maxRating, status, search, owner } = req.query
+    const { position, console, timezone, minRating, maxRating, status, search, owner, nba2kTitle } = req.query
     const query = {}
 
+    // Build query for player fields
     if (position) query.position = position
     if (console) query.console = console
     if (timezone) query.timezone = timezone
@@ -100,7 +101,10 @@ router.get("/", auth, async (req, res) => {
     if (owner && Types.ObjectId.isValid(owner)) {
       query.owner = owner
     }
-
+    if (nba2kTitle) {
+      const usersWithNba2kTitle = await User.find({ nba2kTitle }).select("_id")
+      query.owner = { $in: usersWithNba2kTitle.map((user) => user._id) }
+    }
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: "i" } },
@@ -109,13 +113,14 @@ router.get("/", auth, async (req, res) => {
       ]
     }
 
-    const players = await Player.find(query).populate("owner", "username joinDate totalPlayers isOnline lastSeen")
+    const players = await Player.find(query).populate("owner", "username joinDate totalPlayers isOnline lastSeen nba2kTitle")
     res.json(players)
   } catch (err) {
     console.error(err.message)
     res.status(500).json({ msg: "Server Error" })
   }
 })
+
 
 // @route   GET api/players/:id
 // @desc    Get a single player profile by ID
