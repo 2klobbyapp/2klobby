@@ -384,6 +384,8 @@ export default function AdminDashboardPage() {
   }
 
   const handleDeleteUser = async (userId: string) => {
+    console.log("Deleting user:", userId);
+    
     try {
       await API.delete(`/admin/users/${userId}`)
       setUsers(users.filter((u) => u._id !== userId))

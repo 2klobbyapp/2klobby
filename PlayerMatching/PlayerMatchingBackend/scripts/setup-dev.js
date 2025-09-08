@@ -12,6 +12,12 @@ MONGO_URI=your_mongodb_connection_string_here
 # JWT Secret (generate with: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))")
 JWT_SECRET=your_jwt_secret_here
 
+# Email Configuration (e.g., for Gmail, use smtp.gmail.com and port 587 or 465)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_email_password_or_app_specific_password
+
 # Frontend URL (your current setup)
 FRONTEND_URL=http://localhost:5000
 
@@ -39,7 +45,7 @@ ADMIN_PASSWORD=admin123
 console.log("🚀 Setting up development environment...")
 createEnvFile()
 console.log("📝 Next steps:")
-console.log("1. Update .env file with your MongoDB URI and JWT secret")
+console.log("1. Update .env file with your MongoDB URI, JWT secret, and email credentials")
 console.log("2. Run: npm run dev")
 console.log("3. Your backend will be available at http://localhost:10000")
 console.log("4. Your frontend at localhost:5000 will be able to connect")

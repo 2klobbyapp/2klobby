@@ -86,25 +86,65 @@ router.get("/", auth, async (req, res) => {
     const { position, console, timezone, minRating, maxRating, status, search, owner, nba2kTitle } = req.query
     const query = {}
 
+    // Get current user to check their role
+    const currentUser = await User.findById(req.user.id)
+    
+    // Role-based visibility: customers cannot see admin players
+    if (!currentUser.isAdmin) {
+      const adminUsers = await User.find({ isAdmin: true }).select("_id")
+      query.owner = { $nin: adminUsers.map(user => user._id) }
+    }
+
     // Build query for player fields
     if (position) query.position = position
     if (console) query.console = console
     if (timezone) query.timezone = timezone
     if (minRating) query.rating = { ...query.rating, $gte: Number.parseInt(minRating) }
     if (maxRating) query.rating = { ...query.rating, $lte: Number.parseInt(maxRating) }
+    
     if (status === "online") {
       const onlineUsers = await User.find({ isOnline: true }).select("_id")
-      query.owner = { $in: onlineUsers.map((user) => user._id) }
+      // If customer, exclude admin users from online filter
+      if (!currentUser.isAdmin) {
+        const adminUsers = await User.find({ isAdmin: true }).select("_id")
+        const adminIds = adminUsers.map(user => user._id.toString())
+        const filteredOnlineUsers = onlineUsers.filter(user => 
+          !adminIds.includes(user._id.toString())
+        )
+        query.owner = { $in: filteredOnlineUsers.map(user => user._id) }
+      } else {
+        query.owner = { $in: onlineUsers.map(user => user._id) }
+      }
     } else if (status === "available") {
       query.isAvailable = true
     }
+    
     if (owner && Types.ObjectId.isValid(owner)) {
+      // If customer tries to search for admin's players, prevent it
+      if (!currentUser.isAdmin) {
+        const ownerUser = await User.findById(owner)
+        if (ownerUser && ownerUser.isAdmin) {
+          return res.json([]) // Return empty array if customer tries to see admin players
+        }
+      }
       query.owner = owner
     }
+    
     if (nba2kTitle) {
       const usersWithNba2kTitle = await User.find({ nba2kTitle }).select("_id")
-      query.owner = { $in: usersWithNba2kTitle.map((user) => user._id) }
+      // If customer, exclude admin users from nba2k title filter
+      if (!currentUser.isAdmin) {
+        const adminUsers = await User.find({ isAdmin: true }).select("_id")
+        const adminIds = adminUsers.map(user => user._id.toString())
+        const filteredUsers = usersWithNba2kTitle.filter(user => 
+          !adminIds.includes(user._id.toString())
+        )
+        query.owner = { $in: filteredUsers.map(user => user._id) }
+      } else {
+        query.owner = { $in: usersWithNba2kTitle.map(user => user._id) }
+      }
     }
+    
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: "i" } },
@@ -120,7 +160,6 @@ router.get("/", auth, async (req, res) => {
     res.status(500).json({ msg: "Server Error" })
   }
 })
-
 
 // @route   GET api/players/:id
 // @desc    Get a single player profile by ID
