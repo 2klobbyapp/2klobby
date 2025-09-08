@@ -118,7 +118,7 @@ const SearchPage: React.FC = () => {
     maxRating: 99,
     status: "all",
     search: "",
-    nba2kTitle: [],
+    nba2kTitle: ["2K26"], // Initialize with "2K26" checked
   })
   const [searchResults, setSearchResults] = useState<Player[]>([])
   const [loading, setLoading] = useState(true)
@@ -405,7 +405,7 @@ const SearchPage: React.FC = () => {
           </FilterSection>
           <FilterSection title="NBA 2K Title">
             <div className="space-y-2">
-              {["2K26", "2K25", "2K24"].map((title) => (
+              {["2K26"].map((title) => (
                 <label key={title} className="flex items-center space-x-3">
                   <input
                     type="checkbox"
