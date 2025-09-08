@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import { Menu, X, MessageSquare } from "lucide-react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 
 interface LayoutProps {
@@ -13,13 +13,23 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
   const { isAuthenticated, user, logout } = useAuth()
 
   const navigationItems = [
     { label: "Find Players", path: "/search" },
-    { label: "Add a Player", path: "/add-player" },
+    ...(isAuthenticated ? [{ label: "Add a Player", path: "/add-player" }] : []),
     ...(user?.isAdmin ? [{ label: "Admin", path: "/admin" }] : []),
   ]
+
+  const handleNavClick = (item: { label: string; path: string }) => {
+    if (!isAuthenticated && item.path === "/search") {
+      navigate("/auth")
+    } else {
+      navigate(item.path)
+    }
+    setIsMenuOpen(false)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -48,18 +58,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
             {/* Center Navigation - Hidden on mobile and tablet, shown on desktop */}
             <nav className="hidden lg:flex space-x-6 xl:space-x-8">
-              {isAuthenticated &&
-                navigationItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`text-sm xl:text-base font-medium transition-colors hover:text-gray-900 px-3 py-2 rounded-md ${
-                      location.pathname === item.path ? "text-gray-900 bg-gray-50" : "text-gray-600"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+              {navigationItems.map((item) => (
+                <button
+                  key={item.path}
+                  onClick={() => handleNavClick(item)}
+                  className={`text-sm xl:text-base font-medium transition-colors hover:text-gray-900 px-3 py-2 rounded-md ${
+                    location.pathname === item.path ? "text-gray-900 bg-gray-50" : "text-gray-600"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
             </nav>
 
             {/* Right side - Actions */}
@@ -106,21 +115,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {isMenuOpen && (
           <div className="md:hidden bg-white border-t border-gray-200 shadow-lg animate-in slide-in-from-top-2 duration-200">
             <nav className="px-4 py-6 space-y-2 max-h-96 overflow-y-auto">
-              {isAuthenticated &&
-                navigationItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`block px-4 py-4 rounded-lg transition-colors touch-manipulation text-base font-medium ${
-                      location.pathname === item.path
-                        ? "bg-blue-50 text-blue-700 font-semibold"
-                        : "text-gray-700 hover:bg-gray-50"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+              {navigationItems.map((item) => (
+                <button
+                  key={item.path}
+                  onClick={() => handleNavClick(item)}
+                  className={`block w-full text-left px-4 py-4 rounded-lg transition-colors touch-manipulation text-base font-medium ${
+                    location.pathname === item.path
+                      ? "bg-blue-50 text-blue-700 font-semibold"
+                      : "text-gray-700 hover:bg-gray-50"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
 
               {isAuthenticated ? (
                 <>
