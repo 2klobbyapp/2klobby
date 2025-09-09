@@ -14,6 +14,7 @@ import SettingsPage from "./pages/SettingsPage"
 import AdminDashboardPage from "./pages/AdminDashboardPage"
 import { useAuth } from "./context/AuthContext" // Import useAuth
 import type { JSX } from "react" // Declare JSX variable
+import GettingStartedPage from "./pages/GettingStartedPage"
 
 // PrivateRoute component
 const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
@@ -61,6 +62,11 @@ function App() {
           <Route path="/player/:id" element={
             <PrivateRoute>
               <PlayerProfilePage />
+            </PrivateRoute>
+          } />
+          <Route path="/tutorial" element={
+            <PrivateRoute>
+              <GettingStartedPage />
             </PrivateRoute>
           } />
 
@@ -117,7 +123,7 @@ function App() {
             path="/admin"
             element={
               // <AdminRoute>
-                <AdminDashboardPage />
+              <AdminDashboardPage />
               // </AdminRoute>
             }
           />
