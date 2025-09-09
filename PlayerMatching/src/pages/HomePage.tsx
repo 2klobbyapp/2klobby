@@ -106,7 +106,7 @@ const HomePage: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Search & Connect</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Browse through thousands of players, filter by position, console, timezone, and rating to find your perfect teammates.
+                Browse through 2K players, filter by position, console, timezone, and rating to find your perfect teammates.
               </p>
             </div>
 
