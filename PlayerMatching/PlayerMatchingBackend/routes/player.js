@@ -262,7 +262,9 @@ router.delete("/:id", auth, async (req, res) => {
     if (!player) {
       return res.status(404).json({ msg: "Player not found" })
     }
-    if (player.owner.toString() !== req.user.id) {
+    console.log("Player owner:", player.owner.toString(), "Requesting user:", req.user.id);
+    
+    if (player.owner.toString() !== req.user.id && !req.user.isAdmin) {
       return res.status(401).json({ msg: "User not authorized" })
     }
 
