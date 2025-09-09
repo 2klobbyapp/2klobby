@@ -63,7 +63,11 @@ const AuthPage: React.FC = () => {
 
         login(response.data.token)
         console.log("User role:", response.data.user.isAdmin ? "Admin" : "User")
+        if(isSignUp) {
         navigate(response.data.user.isAdmin ? "/admin" : "/tutorial")
+        } else {
+        navigate(response.data.user.isAdmin ? "/admin" : "/dashboard")
+        }
       } catch (err: any) {
         console.error("Authentication error:", err.response?.data || err.message)
         setError(err.response?.data?.msg || "An unexpected error occurred. Please try again.")
