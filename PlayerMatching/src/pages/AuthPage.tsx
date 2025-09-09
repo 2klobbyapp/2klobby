@@ -147,7 +147,7 @@ const AuthPage: React.FC = () => {
               {isSignUp && (
                 <div className="space-y-2">
                   <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                    Full Name
+                    Username
                   </label>
                   <input
                     id="username"
@@ -157,7 +157,7 @@ const AuthPage: React.FC = () => {
                     value={formData.username}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 sm:py-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base transition-colors"
-                    placeholder="Enter your full name"
+                    placeholder="Enter a unique username"
                   />
                 </div>
               )}

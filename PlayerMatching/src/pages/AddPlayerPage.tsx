@@ -150,7 +150,7 @@ const AddPlayerPage: React.FC = () => {
 
   const timezones = ["AEST", "CET", "CST", "EST", "GMT", "JST", "MST", "PST"]
 
-  const badgeLevels = ["Bronze", "Gold", "Hall of Fame", "Legend", "Silver"]
+  const badgeLevels = ["Bronze", "Silver", "Gold", "Hall of Fame", "Legend"]
 
   const availableBadges = [
   "Deadeye",
