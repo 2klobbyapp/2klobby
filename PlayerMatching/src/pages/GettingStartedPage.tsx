@@ -20,17 +20,12 @@ const GettingStartedPage: React.FC = () => {
 
   // Tutorial content - you can replace these with your actual content
   const tutorialContent = {
-    paragraph: "Welcome to our platform! This quick tutorial will show you how to create a player and message users effectively. Follow along with the videos below to get started quickly.",
+    paragraph: "Welcome to our platform! This quick tutorial will show you how to create a player  effectively. Follow along with the video below to get started quickly.",
     videos: [
       {
         id: "y65fjYBNr30", // Replace with your actual video ID
         title: "How to Create a Player",
         thumbnail: `https://img.youtube.com/vi/y65fjYBNr30/maxresdefault.jpg`
-      },
-      {
-        id: "dQw4w9WgXcQ", // Replace with your actual video ID  
-        title: "How to Message Users",
-        thumbnail: `https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg`
       }
     ]
   }
@@ -97,7 +92,7 @@ const GettingStartedPage: React.FC = () => {
             Tutorial Videos
           </h3>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
             {tutorialContent.videos.map((video, index) => (
               <div key={video.id + index} className="group">
                 <div className="relative aspect-video rounded-xl overflow-hidden bg-gray-100 shadow-lg">
