@@ -23,9 +23,9 @@ const GettingStartedPage: React.FC = () => {
     paragraph: "Welcome to our platform! This quick tutorial will show you how to create a player and message users effectively. Follow along with the videos below to get started quickly.",
     videos: [
       {
-        id: "dQw4w9WgXcQ", // Replace with your actual video ID
+        id: "y65fjYBNr30", // Replace with your actual video ID
         title: "How to Create a Player",
-        thumbnail: `https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg`
+        thumbnail: `https://img.youtube.com/vi/y65fjYBNr30/maxresdefault.jpg`
       },
       {
         id: "dQw4w9WgXcQ", // Replace with your actual video ID  
